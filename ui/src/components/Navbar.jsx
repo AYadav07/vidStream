@@ -2,6 +2,7 @@ import React from 'react'
 import { styled } from 'styled-components';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   position: sticky;
@@ -59,10 +60,12 @@ export const Navbar = () => {
           <Input placeholder="Search" />
           <SearchOutlinedIcon />
         </Search>
-        <Button>
-          <AssignmentIndOutlinedIcon />
-          Sign In
-        </Button>
+        <Link to="signin" style={{textDecoration:"none"}}>
+          <Button>
+            <AssignmentIndOutlinedIcon />
+            Sign In
+          </Button>
+        </Link>
       </Wrapper>
     </Container>
   )

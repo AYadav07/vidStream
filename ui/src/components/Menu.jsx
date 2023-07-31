@@ -12,6 +12,7 @@ import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   flex:1;
@@ -41,6 +42,9 @@ const Item = styled.div`
   gap: 20px;
   cursor: pointer;
   padding: 7px 0;
+  &:hover{
+    background-color: ${({theme})=>theme.soft};
+  }
 `;
 
 const Hr = styled.hr`
@@ -81,10 +85,12 @@ export const Menu = ({darkMode, setDarkMode}) => {
   return (
     <Container>
       <Wrapper>
-        <Logo>
-          <Img src={image}/>
-          vidStream
-        </Logo>
+        <Link to="/" style={{textDecoration:"none", color:"inherit"}}>
+          <Logo>
+            <Img src={image}/>
+            vidStream
+          </Logo>
+        </Link>
         <Item>
           <HomeOutlinedIcon />
           Home
@@ -117,10 +123,12 @@ export const Menu = ({darkMode, setDarkMode}) => {
         <Hr />
         <Login>
           Sign in to like videos, comment and subscribe.
-          <Button>
-            <AssignmentIndOutlinedIcon />
-            Sign In
-          </Button>
+          <Link to="signin" style={{textDecoration:"none"}}>
+            <Button>
+              <AssignmentIndOutlinedIcon />
+              Sign In
+            </Button>
+          </Link>
         </Login>
         <Title>Best of vidStream</Title>
         <Item>
