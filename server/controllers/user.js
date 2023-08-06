@@ -54,7 +54,7 @@ module.exports.getUser = async (req,res,next)=>{
 
 module.exports.subscribe = async (req,res,next)=>{
     try{
-        await User.findById(req.user.id,{
+        await User.findByIdAndUpdate(req.user.id,{
             $push:{subscribedChannels:req.params.id}
         });
         await User.findByIdAndUpdate(req.params.id,{
@@ -71,7 +71,7 @@ module.exports.subscribe = async (req,res,next)=>{
 
 module.exports.unsubscribe = async (req,res,next)=>{
     try{
-        await User.findById(req.user.id,{
+        await User.findByIdAndUpdate(req.user.id,{
             $pull:{subscribedChannels:req.params.id}
         });
         await User.findByIdAndUpdate(req.params.id,{
