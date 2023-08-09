@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Video = require("../models/Video");
 
 
 module.exports.update = async (req,res,next)=>{
@@ -87,7 +88,14 @@ module.exports.unsubscribe = async (req,res,next)=>{
 
 module.exports.like = async (req,res,next)=>{
     try{
-        
+        const id = req.user.id;
+        const videoId = req.params.videoId;
+        await Video.findByIdAndUpdate(videoId,{
+            $addToSet:{likes:id},
+            $pull:{dislikes:id}
+        });
+
+        res.status(200).json(" The video has been liked.");
     }
     catch(err){
         next(err);
@@ -96,7 +104,14 @@ module.exports.like = async (req,res,next)=>{
 
 module.exports.dislike = async (req,res,next)=>{
     try{
-        
+        const id = req.user.id;
+        const videoId = req.params.videoId;
+        await Video.findByIdAndUpdate(videoId,{
+            $addToSet:{dislikes:id},
+            $pull:{likes:id}
+        });
+
+        res.status(200).json(" The video has been disliked.");
     }
     catch(err){
         next(err);
