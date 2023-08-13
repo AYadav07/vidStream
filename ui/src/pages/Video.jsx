@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
 import { Comments } from '../components/Comments';
-import { Card } from '../components/Card';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { dislike, fetchSuccess, like } from '../redux/videoSlice';
+import { format } from 'timeago.js';
+import { subscription } from '../redux/userSlice';
+import { Recomendation } from '../components/Recomendation';
 
 const Container = styled.div`
     display: flex;
@@ -12,9 +18,6 @@ const Content = styled.div`
     flex: 5;
 `;
 
-const Recommendation = styled.div`
-    flex: 2;
-`;
 
 const VideoWrapper = styled.div`
 
@@ -104,41 +107,113 @@ const Description = styled.div`
     font-size: 14px;
 `;
 
+const VideoFrame = styled.video`
+    max-height: 720px;
+    width: 100%;
+    object-fit: cover;
+`;
+
 export const Video = () => {
+    const { currUser } = useSelector((state)=>state.user);
+    const { currVideo } = useSelector((state)=>state.video);
+    const dispatch = useDispatch();
+
+    const path = useLocation().pathname.split('/'[2]);
+
+    //const [video,setVideo] = useState({});
+    const [channel,setChannel] = useState({});
+
+    useEffect(()=>{
+        const fetchData = async()=>{
+            try{
+                const videoRes = await axios.get(`http://localhost:6789/api/video/find/${path}`);
+                const channelRes = await axios.get(`http://localhost:6789/api/user/find/${videoRes.data.userId}`);
+                dispatch(fetchSuccess(videoRes.data));
+                setChannel(channelRes.data);
+            }catch(err){
+
+            }
+        }
+        fetchData();
+    },[path,dispatch]);
+
+    const handleLike = async (e)=>{
+        e.preventDefault();
+        try{
+            await axios.put(`http://localhost:6789/api/user/like/${currVideo._id}`);
+            dispatch(like(currUser._id))
+        }
+        catch(err){
+
+        }
+    }
+    const handleDislike = async (e)=>{
+        e.preventDefault();
+        try{
+            await axios.put(`http://localhost:6789/api/user/dislike/${currVideo._id}`);
+            dispatch(dislike(currUser._id))
+        }
+        catch(err){
+        }
+    }
+
+    const handleSub = async (e)=>{
+        e.preventDefault();
+        try{
+            currUser.subscribedChannels.includes(channel._id) ?
+            await axios.put(`http://localhost:6789/api/user/unsub/${channel._id}`):
+            await axios.put(`http://localhost:6789/api/user/sub/${channel._id}`);
+            dispatch(subscription(channel._id));
+        }
+        catch(err){
+        }
+    }
+
+
+
+
   return (
     <Container>
         <Content>
             <VideoWrapper>
-
+                <VideoFrame src={currVideo.videoURL} controls />
             </VideoWrapper>
-            <Title>Test Video</Title>
+            <Title>{currVideo.title}</Title>
             <Details>
-                <Info>6712531235 views . 12 tarikh isi mahine</Info>
+                <Info>{currVideo.views} views . {format(currVideo.createdAt)}</Info>
                 <Buttons>
-                    <Button>button1</Button>
-                    <Button>button2</Button>
+                    <Button onClick={handleLike} >
+                        {currVideo.likes?.includes(currUser._id) ? 
+                        ("buttonLiked") : ("buttonLike") }
+                        {currVideo.likes?.length}
+                    </Button>
+                    <Button onClick={handleDislike} >
+                        {currVideo.dislikeslikes?.includes(currUser._id) ? 
+                        ("buttonDisliked") : ("buttonDislike") }
+                    </Button>
                     <Button>button3</Button>
                 </Buttons>
             </Details>
             <Hr />
             <Channel>
                 <ChannelInfo>
-                    <Image />
+                    <Image src={channel.img} />
                     <ChannelDetail>
-                        <ChannelName>xyz</ChannelName>
-                        <ChannelCounter>109090909</ChannelCounter>
-                        <Description>ote that the development build is not optimized.
-To create a production build, use npm run build.webpack compiled successfully</Description>
+                        <ChannelName>{channel.name}</ChannelName>
+                        <ChannelCounter>
+                            {channel.subscribers}
+                        </ChannelCounter>
+                        <Description> {currVideo.desc} </Description>
                     </ChannelDetail>
                 </ChannelInfo>
-                <Subscribe>SUBSCRIBE</Subscribe>
+                <Subscribe onClick={handleSub}>
+                    {currUser.subscribedChannels?.includes(channel._id) ? "SUBSCRIBED" : 
+                    "SUBSCRIBE" }</Subscribe>
             </Channel>
             <Hr />
-            <Comments />
+            <Comments videoId = {currVideo._id}/>
         </Content>
-        <Recommendation>
-            <Card type={"sm"}/>
-        </Recommendation>
+        <Recomendation tags={currVideo.tags} />
     </Container>
   )
 }

@@ -1,17 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { styled } from 'styled-components';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
+import { Upload } from './Upload';
 
 
 const Container = styled.div`
   position: sticky;
   top: 0;
   margin-top: 15px;
-  background-color: ${({theme})=> theme.bgLighter};
+  background-color: ${({theme})=> theme.bg};
 `;
 
 const Wrapper = styled.div`
@@ -29,17 +30,25 @@ const Search = styled.div`
   left: 0;
   right: 0;
   margin: auto;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px;
   border: 1px solid #ccc;
   border-radius: 3px;
+  color: ${({theme})=> theme.text};
+  background-color: ${({theme})=> theme.bgLighter};
 `;
 
 const Input = styled.input`
   border: none;
-  background-color: transparent;
+  color: ${({theme})=> theme.text};
+  background-color: ${({theme})=> theme.bgLighter};
+  width:100%;
+  padding: 0 5px;
+  &:focus{
+    outline: none;
+  }
 `;
 
 const Button = styled.button`
@@ -71,32 +80,37 @@ const Avatar = styled.img`
 `;
 
 export const Navbar = () => {
-
-  const { currUser } = useSelector(state=>state.user)
+  const navigate = useNavigate();
+  const { currUser } = useSelector(state=>state.user);
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
 
   return (
-    <Container>
-      <Wrapper>
-        <Search>
-          <Input placeholder="Search" />
-          <SearchOutlinedIcon />
-        </Search>
-        { currUser ? 
-          (<User>
-            <WhatshotOutlinedIcon />
-            <Avatar src={currUser.img} />
-            {currUser.name}
-          </User>)
-        :
-          (<Link to="signin" style={{textDecoration:"none"}}>
-            <Button>
-              <AssignmentIndOutlinedIcon />
-              Sign In
-            </Button>
-          </Link>) 
-        }
-      </Wrapper>
-    </Container>
+    <>
+      <Container>
+        <Wrapper>
+          <Search>
+            <Input placeholder="Search" onChange={(e)=>setQ(e.target.value)} />
+            <SearchOutlinedIcon onClick={()=>navigate(`/search?q=${q}`)} />
+          </Search>
+          { currUser ? 
+            (<User>
+              <WhatshotOutlinedIcon onClick={()=>setOpen(true)} />
+              <Avatar src={currUser.img} />
+              {currUser.name}
+            </User>)
+          :
+            (<Link to="signin" style={{textDecoration:"none"}}>
+              <Button>
+                <AssignmentIndOutlinedIcon />
+                Sign In
+              </Button>
+            </Link>) 
+          }
+        </Wrapper>
+      </Container>
+      {open && <Upload setOpen = {setOpen} /> }
+    </>
   )
 }
 
