@@ -3,6 +3,9 @@ import { styled } from 'styled-components';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
+
 
 const Container = styled.div`
   position: sticky;
@@ -52,7 +55,25 @@ align-items: center;
 gap: 5px;
 `;
 
+const User = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  color: ${({theme})=> theme.text};
+`;
+
+const Avatar = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #999;
+`;
+
 export const Navbar = () => {
+
+  const { currUser } = useSelector(state=>state.user)
+
   return (
     <Container>
       <Wrapper>
@@ -60,12 +81,20 @@ export const Navbar = () => {
           <Input placeholder="Search" />
           <SearchOutlinedIcon />
         </Search>
-        <Link to="signin" style={{textDecoration:"none"}}>
-          <Button>
-            <AssignmentIndOutlinedIcon />
-            Sign In
-          </Button>
-        </Link>
+        { currUser ? 
+          (<User>
+            <WhatshotOutlinedIcon />
+            <Avatar src={currUser.img} />
+            {currUser.name}
+          </User>)
+        :
+          (<Link to="signin" style={{textDecoration:"none"}}>
+            <Button>
+              <AssignmentIndOutlinedIcon />
+              Sign In
+            </Button>
+          </Link>) 
+        }
       </Wrapper>
     </Container>
   )

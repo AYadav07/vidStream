@@ -10,7 +10,7 @@ router.post("/signin", authController.signIn)
 
 
 //Google Auth
-router.post("/google", authController.signUp)
+router.post("/google", authController.googleAuth)
 
 
 module.exports = router;

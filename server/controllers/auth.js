@@ -46,3 +46,24 @@ module.exports.signIn = async (req,res,next)=>{
         next(err);
     }
 }
+
+module.exports.googleAuth = async(req,res,next)=>{
+    try{
+        const user = await User.findOne({email:req.body.email});
+        if(user){
+            const token = jwt.sign({id:user._id}, process.env.JWT_SEC_KEY);
+            res.cookie("access_token", token, {
+                httpOnly:true
+            }).status(200).json(user._doc);
+        }
+        else{
+            const newUser = await User.create({...req.body, fromGoogle:true});
+            const token = jwt.sign({id:user._id}, process.env.JWT_SEC_KEY);
+            res.cookie("access_token", token, {
+                httpOnly:true
+            }).status(200).json(newUser._doc);
+        }
+    }catch(err){
+        next(err);
+    }
+}

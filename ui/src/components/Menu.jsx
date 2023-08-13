@@ -13,6 +13,8 @@ import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 const Container = styled.div`
   flex:1;
@@ -82,6 +84,9 @@ margin-bottom: 12px;
 `;
 
 export const Menu = ({darkMode, setDarkMode}) => {
+
+  const { currUser } = useSelector(state=>state.user)
+
   return (
     <Container>
       <Wrapper>
@@ -95,10 +100,14 @@ export const Menu = ({darkMode, setDarkMode}) => {
           <HomeOutlinedIcon />
           Home
         </Item>
-        <Item>
-          <WhatshotOutlinedIcon />
-          Trends
-        </Item>
+        
+        <Link to="trend" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <WhatshotOutlinedIcon />
+            Trends
+          </Item>
+        </Link>
+
         <Item>
           <HistoryRoundedIcon />
           History
@@ -121,15 +130,19 @@ export const Menu = ({darkMode, setDarkMode}) => {
           Movies
         </Item>
         <Hr />
-        <Login>
-          Sign in to like videos, comment and subscribe.
-          <Link to="signin" style={{textDecoration:"none"}}>
-            <Button>
-              <AssignmentIndOutlinedIcon />
-              Sign In
-            </Button>
-          </Link>
-        </Login>
+        {!currUser && 
+        <>
+          <Login>
+            Sign in to like videos, comment and subscribe.
+            <Link to="signin" style={{textDecoration:"none"}}>
+              <Button>
+                <AssignmentIndOutlinedIcon />
+                Sign In
+              </Button>
+            </Link>
+          </Login>
+        </>
+        }
         <Title>Best of vidStream</Title>
         <Item>
           <EmojiEventsOutlinedIcon />
