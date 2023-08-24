@@ -39,6 +39,7 @@ const Text=styled.span`
 
 export const Comment = ({comment}) => {
     const [channel,setChannel] = useState({});
+    const imgSrc = 'http://localhost:6789/images/';
 
     useEffect(()=>{
         const fetchChannel = async()=>{
@@ -53,7 +54,7 @@ export const Comment = ({comment}) => {
     },[channel.userId]);
   return (
     <Container>
-        <Avatar src={channel.img} />
+        <Avatar src={imgSrc+channel.img} />
         <Details>
             <Name>{channel.name} <Date> {format(comment.createdAt)} </Date> </Name>
             <Text>{comment.desc}</Text>

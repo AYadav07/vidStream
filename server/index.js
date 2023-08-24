@@ -7,12 +7,50 @@ const cors = require("cors");
 const mongoose = require('./config/mongoose');
 const routes = require("./routes");
 const errorLogger = require("./utilities/errorLogger");
+const multer = require("multer");
+const path = require('path');
 
-app.use(cors());
+const whiteList = ['http://localhost:3000', 'http://localhost:6789']
+
+const corsOption = {
+    credentials:true,
+    exposedHeaders:["set-cookie"],
+    origin:(origin,callback)=>{
+        if(!origin || whiteList.indexOf(origin)!==-1)
+            callback(null, true);
+        else    callback(new Error("Not allowed by cors: "+origin))
+    },
+    optionSuccessStatus:200
+};
+
+app.use(cors(corsOption));
+//app.use(cors({origin:true, credentials:true }));
 dotenv.config();
 app.use(cookieParser());
 app.use(express.json());
 
+app.use("/images", express.static(path.join(__dirname,'uploads/images')));
+app.use("/videos", express.static(path.join(__dirname,'uploads/videos')));
+
+
+const storage = multer.diskStorage({
+    destination : function(req,file,cb){
+        if(file.mimetype==='image/jpeg'){
+            cb(null,"uploads/images");
+        }
+        else{
+            cb(null,'uploads/videos');
+        }
+    },
+    filename:function(req, file, cb){
+        cb(null,req.body.name);
+    }
+})
+
+const upload = multer({storage:storage});
+app.post("/upload", upload.single("file"), (req,res)=>{
+    res.status(200).json("File uploaded successFUlly.");
+})
 
 app.use("/api",routes);
 app.use(errorLogger);

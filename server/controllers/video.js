@@ -3,6 +3,7 @@ const Video = require("../models/Video");
 
 module.exports.addVideo = async (req,res,next)=>{
     try{
+        console.log(req.body);
         const newVideo = await Video.create({userId:req.user.id, ...req.body});
         res.status(200).json(newVideo);
     }
@@ -39,7 +40,7 @@ module.exports.updateVideo = async (req,res,next)=>{
 
 module.exports.deleteVideo = async (req,res,next)=>{
     try{
-        
+        console.log("In Delete")
         const video = await Video.findById(req.params.id);
         if(!video){
             const err = new Error("Invalid video Id");
@@ -64,13 +65,16 @@ module.exports.deleteVideo = async (req,res,next)=>{
 
 module.exports.getVideo = async (req,res,next)=>{
     try{
-        const video = await Video.findById(req.params.id);
+        
+        const video =  await Video.findByIdAndUpdate(req.params.id, {
+            $inc:{views:1}
+        },{new:true});
+        //const v = await Video.findById(req.params.id);
         if(!video){
             const err = new Error("Invalid video Id");
             err.status=404;
             return next(err);
         }
-
         res.status(200).json(video);
     }
     catch(err){
@@ -103,6 +107,7 @@ module.exports.getTrend = async (req,res,next)=>{
 
 module.exports.getRandom = async (req,res,next)=>{
     try{
+        //console.log(req.cookies);
         const videos = await Video.aggregate([{$sample:{size : 40}}]);
         res.status(200).json(videos);
     }

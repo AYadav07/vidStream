@@ -6,6 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 import { Upload } from './Upload';
+import { useDispatch } from 'react-redux'
+import { logout } from '../redux/userSlice';
 
 
 const Container = styled.div`
@@ -84,6 +86,13 @@ export const Navbar = () => {
   const { currUser } = useSelector(state=>state.user);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const dispatch = useDispatch();
+
+  const handleLogout = (e)=>{
+    e.preventDefault();
+    dispatch(logout());
+    window.location.replace("/");
+  }
 
   return (
     <>
@@ -98,6 +107,9 @@ export const Navbar = () => {
               <WhatshotOutlinedIcon onClick={()=>setOpen(true)} />
               <Avatar src={currUser.img} />
               {currUser.name}
+              <Button>
+                <AssignmentIndOutlinedIcon onClick={handleLogout}/>
+              </Button>
             </User>)
           :
             (<Link to="signin" style={{textDecoration:"none"}}>
@@ -109,7 +121,7 @@ export const Navbar = () => {
           }
         </Wrapper>
       </Container>
-      {open && <Upload setOpen = {setOpen} /> }
+      {open && <Upload setOpen = {setOpen} videoId={null} /> }
     </>
   )
 }

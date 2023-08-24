@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { styled } from 'styled-components'
-//import { format } from 'timeago.js';
+import { format } from 'timeago.js';
 import axios from "axios";
 
 
@@ -61,6 +61,7 @@ const Info = styled.div`
 export const Card = ({type, video}) => {
 
     const [channel, setChannel] = useState({});
+    const imgSrc = 'http://localhost:6789/images/';
 
     useEffect(()=>{
         const fetchChannel = async ()=>{
@@ -74,13 +75,13 @@ export const Card = ({type, video}) => {
   return (
     <Link to={`/video/${video._id}`} style={{textDecoration:"none"}}>
         <Container type={type}>
-            <Img type={type} src={video.imgURL} />
+            <Img type={type} src={imgSrc+video.imgURL} />
             <Details type={type} >
-                <ChannelImg type={type} src={channel.img} />
+                <ChannelImg type={type} src={imgSrc+channel.img} />
                 <Texts>
                     <Title>{video.title}</Title>
                     <ChannelName> {channel.name} </ChannelName>
-                    <Info>{video.views} views . {video.createdAt} </Info>
+                    <Info>{video.views} views . {format(video.createdAt)} </Info>
                 </Texts>
             </Details>
         </Container>

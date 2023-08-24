@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
 import { Comments } from '../components/Comments';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { dislike, fetchSuccess, like } from '../redux/videoSlice';
 import { format } from 'timeago.js';
 import { subscription } from '../redux/userSlice';
 import { Recomendation } from '../components/Recomendation';
+import { Upload } from '../components/Upload';
 
 const Container = styled.div`
     display: flex;
@@ -117,19 +118,25 @@ export const Video = () => {
     const { currUser } = useSelector((state)=>state.user);
     const { currVideo } = useSelector((state)=>state.video);
     const dispatch = useDispatch();
+    const imgSrc = 'http://localhost:6789/images/';
+    const vidSrc = 'http://localhost:6789/videos/';
+    const navigate = useNavigate();
 
-    const path = useLocation().pathname.split('/'[2]);
+    const path = useLocation().pathname.split('/')[2];
 
     //const [video,setVideo] = useState({});
     const [channel,setChannel] = useState({});
+    const [open, setOpen] = useState(false);
 
     useEffect(()=>{
         const fetchData = async()=>{
             try{
+                
                 const videoRes = await axios.get(`http://localhost:6789/api/video/find/${path}`);
                 const channelRes = await axios.get(`http://localhost:6789/api/user/find/${videoRes.data.userId}`);
                 dispatch(fetchSuccess(videoRes.data));
                 setChannel(channelRes.data);
+                console.log(channelRes);
             }catch(err){
 
             }
@@ -140,8 +147,10 @@ export const Video = () => {
     const handleLike = async (e)=>{
         e.preventDefault();
         try{
-            await axios.put(`http://localhost:6789/api/user/like/${currVideo._id}`);
+            if(currUser){
+            await axios.put(`http://localhost:6789/api/user/like/${currVideo._id}`, {Headers: {'Content-Type':'application/json'}}, {withCredentials:true});
             dispatch(like(currUser._id))
+            }
         }
         catch(err){
 
@@ -150,8 +159,10 @@ export const Video = () => {
     const handleDislike = async (e)=>{
         e.preventDefault();
         try{
-            await axios.put(`http://localhost:6789/api/user/dislike/${currVideo._id}`);
-            dispatch(dislike(currUser._id))
+            if(currUser){
+                await axios.put(`http://localhost:6789/api/user/dislike/${currVideo._id}`, {Headers: {'Content-Type':'application/json'}}, {withCredentials:true});
+                dispatch(dislike(currUser._id))
+            }
         }
         catch(err){
         }
@@ -161,43 +172,63 @@ export const Video = () => {
         e.preventDefault();
         try{
             currUser.subscribedChannels.includes(channel._id) ?
-            await axios.put(`http://localhost:6789/api/user/unsub/${channel._id}`):
-            await axios.put(`http://localhost:6789/api/user/sub/${channel._id}`);
+            await axios.put(`http://localhost:6789/api/user/unsub/${channel._id}`, {Headers: {'Content-Type':'application/json'}}, {withCredentials:true}):
+            await axios.put(`http://localhost:6789/api/user/sub/${channel._id}`, {Headers: {'Content-Type':'application/json'}}, {withCredentials:true});
             dispatch(subscription(channel._id));
         }
         catch(err){
         }
     }
 
+    const handleDelete = async (e)=>{
+        e.preventDefault();
+        try{
+            
+            await axios.delete(`http://localhost:6789/api/video/${currVideo._id}`, {withCredentials:true});
+            navigate("/");
+        }
+        catch(err){
+        }
+    }
 
 
-
+    
+    if (!currVideo || Object.keys(channel).length===0) {
+        return null; // Or render a loading state or message
+    }
   return (
-    <Container>
-        <Content>
+    <>
+        <Container>
+        {currVideo && (<>
+        <Content> 
             <VideoWrapper>
-                <VideoFrame src={currVideo.videoURL} controls />
+                <VideoFrame controls><source src={vidSrc+currVideo.videoURL} /></VideoFrame>
             </VideoWrapper>
             <Title>{currVideo.title}</Title>
             <Details>
                 <Info>{currVideo.views} views . {format(currVideo.createdAt)}</Info>
                 <Buttons>
                     <Button onClick={handleLike} >
-                        {currVideo.likes?.includes(currUser._id) ? 
+                        {currVideo.likes?.includes(currUser?._id) ? 
                         ("buttonLiked") : ("buttonLike") }
                         {currVideo.likes?.length}
                     </Button>
                     <Button onClick={handleDislike} >
-                        {currVideo.dislikeslikes?.includes(currUser._id) ? 
+                        {currVideo.dislikeslikes?.includes(currUser?._id) ? 
                         ("buttonDisliked") : ("buttonDislike") }
                     </Button>
                     <Button>button3</Button>
+                    {currUser && currUser._id === currVideo.userId && (
+                        <><Button onClick={handleDelete}>Delete</Button>
+                        <Button onClick={(e)=>setOpen(true)}>Update</Button></>
+                        
+                    )}
                 </Buttons>
             </Details>
             <Hr />
             <Channel>
                 <ChannelInfo>
-                    <Image src={channel.img} />
+                    <Image src={imgSrc+channel.img} />
                     <ChannelDetail>
                         <ChannelName>{channel.name}</ChannelName>
                         <ChannelCounter>
@@ -207,13 +238,15 @@ export const Video = () => {
                     </ChannelDetail>
                 </ChannelInfo>
                 <Subscribe onClick={handleSub}>
-                    {currUser.subscribedChannels?.includes(channel._id) ? "SUBSCRIBED" : 
+                    {currUser?.subscribedChannels?.includes(channel._id) ? "SUBSCRIBED" : 
                     "SUBSCRIBE" }</Subscribe>
-            </Channel>
-            <Hr />
-            <Comments videoId = {currVideo._id}/>
-        </Content>
-        <Recomendation tags={currVideo.tags} />
-    </Container>
+                </Channel>
+                <Hr />
+                <Comments videoId = {currVideo._id}/>
+            </Content>
+            <Recomendation tags={currVideo.tags} /> </>)}
+        </Container>
+        {open && <Upload setOpen = {setOpen} videoId={currVideo._id} />}
+    </>
   )
 }

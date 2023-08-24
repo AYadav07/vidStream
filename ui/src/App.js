@@ -43,7 +43,7 @@ function App() {
                   <Route  path='signin' element={<SignIn />} />
                   <Route  path='search' element={<Search />} />
                   <Route path='video'>
-                    <Route path=':id' element={<Video/>} />
+                    <Route path=':id' element={<Video />} />
                   </Route>
                 </Route>
               </Routes>

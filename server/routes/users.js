@@ -13,8 +13,8 @@ router.put("/sub/:id", verifyToken, userController.subscribe);
 
 router.put("/unsub/:id", verifyToken, userController.unsubscribe);
 
-router.put("/like/:videoId", userController.like);
+router.put("/like/:videoId", verifyToken, userController.like);
 
-router.put("/dislike/:videoId", userController.dislike);
+router.put("/dislike/:videoId", verifyToken, userController.dislike);
 
 module.exports = router;

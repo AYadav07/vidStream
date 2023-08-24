@@ -39,8 +39,11 @@ module.exports.signIn = async (req,res,next)=>{
         const {password, ...other} = user._doc;
         const token = jwt.sign({id:user._id}, process.env.JWT_SEC_KEY);
         res.cookie("access_token", token, {
-            httpOnly:true
-        }).status(200).json(other);
+            httpOnly:true,
+            maxAge:1200000
+        });
+        console.log("cookie created successfully", token);
+        res.status(200).json(other);
     }
     catch(err){
         next(err);

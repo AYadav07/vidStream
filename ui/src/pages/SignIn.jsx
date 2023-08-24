@@ -74,11 +74,21 @@ export const SignIn = () => {
         e.preventDefault();
         dispatch(loginStart());
         try{
-            const res = await axios.post("http://localhost:6789/api/auth/signin", {name,password});
+            const res = await axios.post("http://localhost:6789/api/auth/signin", {name,password},{withCredentials:true, credentials:'include'});
             console.log(res)
             dispatch(loginSuccess(res.data));
+            res.data && window.location.replace("/");
         }catch(err){
             dispatch(loginFailure());
+        }
+    }
+
+    const handleSignUp = async (e) =>{
+        e.preventDefault();
+        try{
+            const res = await axios.post("http://localhost:6789/api/auth/signup", {name,password,email});
+            console.log(res);
+        }catch(err){
         }
     }
 
@@ -109,7 +119,9 @@ export const SignIn = () => {
             <Input placeholder='username' onChange={e=>setName(e.target.value)} />
             <Input placeholder='email' onChange={e=>setEmail(e.target.value)} />
             <Input type='password' placeholder='password' onChange={e=>setPassword(e.target.value)} />
-            <Button>Sign Up</Button>
+            <Button onClick={handleSignUp} >Sign Up</Button>
+            {/* <Link to="signup" style={{textDecoration:"none", textAlign:'center'}}>
+                <Button>SignUp</Button></Link> */}
             <More>
                 <Links>
                     <Link>Help</Link>

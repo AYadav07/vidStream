@@ -88,6 +88,7 @@ module.exports.unsubscribe = async (req,res,next)=>{
 
 module.exports.like = async (req,res,next)=>{
     try{
+        console.log(req.user);
         const id = req.user.id;
         const videoId = req.params.videoId;
         await Video.findByIdAndUpdate(videoId,{

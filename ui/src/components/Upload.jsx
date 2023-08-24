@@ -4,6 +4,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL  } from "firebase
 //import app from '../firebase';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { fetchSuccess } from '../redux/videoSlice';
 
 
 const Container = styled.div`
@@ -46,7 +47,7 @@ const Input = styled.input`
     background-color: transparent;
 `;
 
-const Desc = styled.text`
+const Desc = styled.input`
     border: 1px solid ${({theme})=> theme.soft};;
     color: ${({theme})=> theme.text};
     border-radius: 3px;
@@ -72,7 +73,7 @@ const Label = styled.label`
 `;
 
 
-export const Upload = ({setOpen}) => {
+export const Upload = ({setOpen, videoId}) => {
 
     const [img, setImg] = useState(null);
     const [video,setVideo] = useState(null);
@@ -97,6 +98,7 @@ export const Upload = ({setOpen}) => {
         const filename = new Date().getTime() + file.name;
         const storageRef = ref(storage, filename);
         const uploadTask = uploadBytesResumable(storageRef, file);
+       
 
         uploadTask.on('state_changed', 
             (snapshot) => {
@@ -131,23 +133,47 @@ export const Upload = ({setOpen}) => {
             );
     }
 
+    const uploadFileLocal = async (file,urlType)=>{
+        const data = new FormData();
+        const filename = Date.now()+file.name;
+        data.append("name",filename);
+        data.append("file",file);
+        try{
+            const res = await axios.post("http://localhost:6789/upload", data);
+            setInputs((prev)=>{
+                return {...prev, [urlType]:filename};
+            });
+        }
+        catch(err){
+
+        }
+    }
+
     useEffect(()=>{
-        video && uploadFile(video,"videoURL");
+        video && uploadFileLocal(video,"videoURL");
     },[video]);
 
     useEffect(()=>{
-        img && uploadFile(img,"imgURL");
+        img && uploadFileLocal(img,"imgURL");
     },[img]);
 
     const handleUpload = async (e)=>{
         e.preventDefault();
         try{
-            const res = await axios.post('http://localost:6789/api/video',{...inputs, tags});
-            setOpen(false);
-            res.status ===200 && nevigate(`/vedio/${res.data._id}`);
+            if(!videoId){
+                const res = await axios.post('http://localhost:6789/api/video',{...inputs, tags},{withCredentials:true, credentials:'include'});
+                setOpen(false);
+                res.status ===200 && nevigate(`/vedio/${res.data._id}`);
+            }else{
+                const res = await axios.put(`http://localhost:6789/api/video/${videoId}`,{...inputs, tags}, {withCredentials:true, credentials:'include'});
+                setOpen(false);
+                res.status ===200 && nevigate(`/vedio/${res.data._id}`);
+            }
+            
+
         }
         catch(err){
-
+            console.log(err);
         }
     }
 
@@ -155,12 +181,14 @@ export const Upload = ({setOpen}) => {
     <Container>
         <Wrapper>
             <Close onClick={()=>setOpen(false)} >X</Close>
-            <Title> Upload a video</Title>
-            <Label> Video : </Label>
-            { videoPer>0 ? ("Uploading : "+ videoPer+"%"):
-            (<Input type='file' accept='video/*' onChange={e=>setVideo(e.target.files[0])} />) }
+            {!videoId && <>
+                <Title> Upload a video</Title>
+                <Label> Video : </Label>
+                { videoPer>0 ? ("Uploading : "+ videoPer+"%"):
+                (<Input type='file' accept='video/*' onChange={e=>setVideo(e.target.files[0])} />) }
+                </> }
             <Input type='text' placeholder='Title' name='title' onChange={handleChange} />
-            <Desc placeholder='Description' rows={8} name='desc' onChange={handleChange} />
+            <Desc placeholder='Description' name='description' onChange={handleChange} />
             <Input type='text' placeholder='Separate tags with commas (,)' onChange={handleTags} />
             <Label> Image : </Label>
             { imgPer>0 ? ("Uploading : "+ imgPer + "%") :

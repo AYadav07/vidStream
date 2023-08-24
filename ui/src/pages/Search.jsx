@@ -17,7 +17,8 @@ export const Search = () => {
 
     useEffect(()=>{
         const fetchVideos = async ()=>{
-            const res= await axios.get(`http://localhost:6789/api/video/search?${query}`);
+            console.log(query);
+            const res= await axios.get(`http://localhost:6789/api/video/search${query}`);
             setVideos(res.data);
         }
         fetchVideos();
