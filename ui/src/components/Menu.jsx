@@ -4,7 +4,6 @@ import image from '../img/logo.jpg'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
-import VideoLibraryOutlinedIcon from '@mui/icons-material/VideoLibraryOutlined';
 import SubscriptionsOutlinedIcon from '@mui/icons-material/SubscriptionsOutlined';
 import AudiotrackOutlinedIcon from '@mui/icons-material/AudiotrackOutlined';
 import MovieCreationOutlinedIcon from '@mui/icons-material/MovieCreationOutlined';
@@ -96,12 +95,14 @@ export const Menu = ({darkMode, setDarkMode}) => {
             vidStream
           </Logo>
         </Link>
-        <Item>
-          <HomeOutlinedIcon />
-          Home
-        </Item>
+        <Link to="/" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <HomeOutlinedIcon />
+            Home
+          </Item>
+        </Link>
         
-        <Link to="trend" style={{textDecoration:"none", color:"inherit"}}>
+        <Link to="trends" style={{textDecoration:"none", color:"inherit"}}>
           <Item>
             <WhatshotOutlinedIcon />
             Trends
@@ -112,23 +113,27 @@ export const Menu = ({darkMode, setDarkMode}) => {
           <HistoryRoundedIcon />
           History
         </Item>
-        <Item>
-          <VideoLibraryOutlinedIcon />
-          Library
-        </Item>
+        <Link to="subscriptions" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <SubscriptionsOutlinedIcon />
+            Subscription
+          </Item>
+        </Link>
+        
         <Hr />
-        <Item>
-          <SubscriptionsOutlinedIcon />
-          Subscription
-        </Item>
-        <Item>
-          <AudiotrackOutlinedIcon />
-          Music
-        </Item>
-        <Item>
-          <MovieCreationOutlinedIcon />
-          Movies
-        </Item>
+        <Link to="music" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <AudiotrackOutlinedIcon />
+            Music
+          </Item>
+        </Link>
+        
+        <Link to="movies" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <MovieCreationOutlinedIcon />
+            Movies
+          </Item>
+        </Link>
         <Hr />
         {!currUser && 
         <>
@@ -144,18 +149,18 @@ export const Menu = ({darkMode, setDarkMode}) => {
         </>
         }
         <Title>Best of vidStream</Title>
-        <Item>
-          <EmojiEventsOutlinedIcon />
-          Sports
-        </Item>
-        <Item>
-          <SportsEsportsOutlinedIcon />
-          Gaming
-        </Item>
-        <Item>
-          <HomeOutlinedIcon />
-          Home
-        </Item>
+        <Link to="sports" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <EmojiEventsOutlinedIcon />
+            Sports
+          </Item>
+        </Link>
+        <Link to="gaming" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <SportsEsportsOutlinedIcon />
+            Gaming
+          </Item>
+        </Link>
         <Item onClick={()=>setDarkMode(!darkMode)}>
           <DarkModeOutlinedIcon />
           Change Theme

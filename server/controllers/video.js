@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const Video = require("../models/Video");
+const path = require('path');
+const fs = require("fs");
 
 module.exports.addVideo = async (req,res,next)=>{
     try{
@@ -40,7 +42,6 @@ module.exports.updateVideo = async (req,res,next)=>{
 
 module.exports.deleteVideo = async (req,res,next)=>{
     try{
-        console.log("In Delete")
         const video = await Video.findById(req.params.id);
         if(!video){
             const err = new Error("Invalid video Id");
@@ -53,6 +54,17 @@ module.exports.deleteVideo = async (req,res,next)=>{
             err.status=403;
             return next(err);
         }
+        const url = video.videoURL;
+        const imgurl = video.imgURL;
+
+        fs.unlink(path.join(__dirname,"../uploads/images",imgurl),(err)=>{
+            if(err)
+                throw err;
+        });
+        fs.unlink(path.join(__dirname,"../uploads/videos",url),(err)=>{
+            if(err)
+                throw err;
+        });
 
         await Video.findByIdAndDelete(req.params.id);
 
