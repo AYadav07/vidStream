@@ -17,4 +17,6 @@ router.put("/like/:videoId", verifyToken, userController.like);
 
 router.put("/dislike/:videoId", verifyToken, userController.dislike);
 
+router.get("/:id", userController.getVideos);
+
 module.exports = router;

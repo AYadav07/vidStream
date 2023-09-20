@@ -2,14 +2,33 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Video = require("../models/Video");
+const fs = require('fs')
+const path = require('path')
 
 
 module.exports.update = async (req,res,next)=>{
     try{
+        console.log(req.body);
         if(req.params.id===req.user.id){
-            const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set:req.body
-            }, {new:true});
+            // if(req.body.img){
+            //     const image = await User.findById(req.params.id);
+            //     const imageFilePath = image.img;
+            // }
+            const updatedUser = await User.findById(req.params.id);
+            updatedUser.name=req.body.name;
+            updatedUser.email=req.body.email;
+            if(req.body.img){
+                const imageFilePath = updatedUser.img;
+                updatedUser.img=req.body.img;
+                if(imageFilePath){
+                    fs.unlink(path.join(__dirname,"../uploads/images",imageFilePath),(err)=>{
+                        if(err)
+                            throw err;
+                    });
+                }
+            }
+            updatedUser.save();
+            console.log(updatedUser)
             res.status(200).json(updatedUser);
         }
         else{
@@ -113,6 +132,20 @@ module.exports.dislike = async (req,res,next)=>{
         });
 
         res.status(200).json(" The video has been disliked.");
+    }
+    catch(err){
+        next(err);
+    }
+}
+
+module.exports.getVideos = async (req,res,next)=>{
+    try{
+        console.log(req.params.id);
+        const videos = await Video.find({
+            userId:req.params.id
+        });
+
+        res.status(200).json(videos);
     }
     catch(err){
         next(err);

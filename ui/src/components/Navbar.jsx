@@ -87,6 +87,7 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const dispatch = useDispatch();
+  const imgSrc = 'http://localhost:6789/images/';
 
   const handleLogout = (e)=>{
     e.preventDefault();
@@ -105,8 +106,9 @@ export const Navbar = () => {
           { currUser ? 
             (<User>
               <WhatshotOutlinedIcon onClick={()=>setOpen(true)} />
-              <Avatar src={currUser.img} />
-              {currUser.name}
+              <Link to={"profile"}>
+                <Avatar src={imgSrc+currUser.img} />
+              </Link>
               <Button>
                 <AssignmentIndOutlinedIcon onClick={handleLogout}/>
               </Button>

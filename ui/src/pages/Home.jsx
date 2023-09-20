@@ -15,7 +15,7 @@ export const Home = ({type}) => {
 
   useEffect(()=>{
     const fetchVideo = async ()=>{
-      const res = await axios.get(`http://localhost:6789/api/video/${type}`);
+      const res = await axios.get(`http://localhost:6789/api/video/${type}`, {withCredentials: true});
       setVideos(res.data);
     }
     fetchVideo();

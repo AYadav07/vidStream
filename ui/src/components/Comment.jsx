@@ -10,8 +10,8 @@ const Container = styled.div`
 `;
 
 const Avatar = styled.img`
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border-radius:50%;
 `;
 
@@ -44,14 +44,14 @@ export const Comment = ({comment}) => {
     useEffect(()=>{
         const fetchChannel = async()=>{
             try{
-                const channelRes = await axios.get(`http://localhost:6789/api/user/find/${channel.userId}`);
+                const channelRes = await axios.get(`http://localhost:6789/api/user/find/${comment.userId}`);
                 setChannel(channelRes.data);
             }catch(err){
 
             }
         }
         fetchChannel();
-    },[channel.userId]);
+    },[comment.userId]);
   return (
     <Container>
         <Avatar src={imgSrc+channel.img} />

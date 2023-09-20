@@ -81,7 +81,7 @@ export const Card = ({type, video}) => {
                 <Texts>
                     <Title>{video.title}</Title>
                     <ChannelName> {channel.name} </ChannelName>
-                    <Info>{video.views} views . {format(video.createdAt)} </Info>
+                    <Info>{Math.floor(video.views/2)} views . {format(video.createdAt)} </Info>
                 </Texts>
             </Details>
         </Container>

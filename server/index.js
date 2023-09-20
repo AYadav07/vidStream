@@ -35,7 +35,7 @@ app.use("/videos", express.static(path.join(__dirname,'uploads/videos')));
 
 const storage = multer.diskStorage({
     destination : function(req,file,cb){
-        if(file.mimetype==='image/jpeg'){
+        if(/jpeg|jpg|png|gif/.test(file.mimetype)){ //file.mimetype==='image|jpeg|png
             cb(null,"uploads/images");
         }
         else{
@@ -49,6 +49,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage:storage});
 app.post("/upload", upload.single("file"), (req,res)=>{
+    console.log("File uploaded successfully.");
     res.status(200).json("File uploaded successFUlly.");
 })
 

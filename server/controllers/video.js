@@ -130,6 +130,7 @@ module.exports.getRandom = async (req,res,next)=>{
 
 module.exports.addSub = async (req,res,next)=>{
     try{
+        console.log("in sub")
         const user = await User.findById(req.user.id);
         const subChannels = user.subscribedChannels;
 

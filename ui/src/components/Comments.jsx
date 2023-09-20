@@ -15,8 +15,8 @@ const NewComment = styled.div`
 `;
 
 const Avatar = styled.img`
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border-radius:50%;
 `;
 
@@ -45,6 +45,7 @@ export const Comments = ({videoId}) => {
     const { currUser } = useSelector((state)=>state.user);
     const [post, setPost] = useState("");
     const [updated, setUpdated] = useState(false);
+    const imgSrc = 'http://localhost:6789/images/';
 
     useEffect(()=>{
         const fetchComments = async ()=>{
@@ -74,7 +75,7 @@ export const Comments = ({videoId}) => {
     <Container>
         {currUser && (
         <NewComment>
-            <Avatar src={currUser.img} />
+            <Avatar src={imgSrc+currUser.img} />
             <Input placeholder='Add a comment' onChange={(e)=>setPost(e.target.value)}/>
             <Button onClick={handleComment}>
                 Comment

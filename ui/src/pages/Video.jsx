@@ -206,7 +206,7 @@ export const Video = () => {
             </VideoWrapper>
             <Title>{currVideo.title}</Title>
             <Details>
-                <Info>{currVideo.views} views . {format(currVideo.createdAt)}</Info>
+                <Info>{Math.floor(currVideo.views/2)} views . {format(currVideo.createdAt)}</Info>
                 <Buttons>
                     <Button onClick={handleLike} >
                         {currVideo.likes?.includes(currUser?._id) ? 
